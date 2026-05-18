@@ -1,0 +1,253 @@
+.booking-details {
+  .back-button {
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+    font-weight: 300;
+    margin-bottom: 2rem;
+  }
+
+  .info-tile,
+  .components-tile,
+  .estimate-tile {
+    margin-bottom: 1.5rem;
+    padding: 1.5rem;
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--cds-border-subtle);
+    }
+  }
+
+  .info-grid {
+    display: grid;
+    gap: 1rem;
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--cds-border-subtle);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .label {
+        color: var(--cds-text-secondary);
+        font-weight: 500;
+      }
+
+      .value {
+        color: var(--cds-text-primary);
+
+        &.cost {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--cds-support-success);
+        }
+
+        &.status-active {
+          color: var(--cds-support-success);
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+
+        &.status-cancelled {
+          color: var(--cds-support-error);
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  .component-item {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: var(--cds-layer-01);
+    border-radius: 4px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .component-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+
+      .component-type {
+        text-transform: capitalize;
+        font-weight: 600;
+        color: var(--cds-text-primary);
+      }
+
+      .component-cost {
+        font-weight: 600;
+        color: var(--cds-support-success);
+      }
+    }
+
+    .component-details {
+      font-size: 0.875rem;
+      color: var(--cds-text-secondary);
+
+      div {
+        margin-bottom: 0.25rem;
+      }
+    }
+  }
+
+  .no-estimate {
+    text-align: center;
+    padding: 3rem 1rem;
+
+    p {
+      margin-bottom: 1.5rem;
+      color: var(--cds-text-secondary);
+    }
+  }
+
+  .estimate-content {
+    .estimate-main {
+      margin-bottom: 2rem;
+
+      .estimate-amount {
+        text-align: center;
+        padding: 2rem;
+        background-color: var(--cds-layer-01);
+        border-radius: 4px;
+        margin-bottom: 1.5rem;
+
+        .label {
+          display: block;
+          font-size: 0.875rem;
+          color: var(--cds-text-secondary);
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .amount {
+          display: block;
+          font-size: 2.5rem;
+          font-weight: 600;
+          color: var(--cds-support-success);
+          margin-bottom: 0.5rem;
+        }
+
+        .percentage {
+          display: block;
+          font-size: 1rem;
+          color: var(--cds-text-secondary);
+        }
+      }
+
+      .confidence-interval {
+        .label {
+          display: block;
+          font-size: 0.875rem;
+          color: var(--cds-text-secondary);
+          margin-bottom: 0.5rem;
+        }
+
+        .range {
+          font-size: 1.125rem;
+          font-weight: 500;
+          margin-bottom: 1rem;
+          color: var(--cds-text-primary);
+        }
+      }
+    }
+
+    .risk-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      padding: 1rem;
+      background-color: var(--cds-layer-01);
+      border-radius: 4px;
+      margin-bottom: 1.5rem;
+
+      .risk-level,
+      .risk-score {
+        .label {
+          display: block;
+          font-size: 0.875rem;
+          color: var(--cds-text-secondary);
+          margin-bottom: 0.5rem;
+        }
+
+        .value {
+          display: block;
+          font-size: 1.25rem;
+          font-weight: 600;
+          text-transform: uppercase;
+
+          &.risk-low {
+            color: var(--cds-support-success);
+          }
+
+          &.risk-medium {
+            color: var(--cds-support-warning);
+          }
+
+          &.risk-high,
+          &.risk-critical {
+            color: var(--cds-support-error);
+          }
+        }
+      }
+    }
+
+    .scenarios {
+      margin-bottom: 1.5rem;
+
+      h4 {
+        font-size: 1rem;
+        font-weight: 500;
+        margin-bottom: 1rem;
+      }
+
+      .scenario-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+
+        .scenario {
+          text-align: center;
+          padding: 1rem;
+          background-color: var(--cds-layer-01);
+          border-radius: 4px;
+
+          .scenario-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--cds-text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+          }
+
+          .scenario-value {
+            display: block;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--cds-text-primary);
+          }
+        }
+      }
+    }
+
+    .refresh-btn {
+      width: 100%;
+    }
+  }
+}
+
+// Made with Bob

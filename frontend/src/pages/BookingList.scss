@@ -1,0 +1,66 @@
+.booking-list {
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 1.8rem 2rem;
+    border-radius: 30px;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(248, 241, 255, 0.82)),
+      radial-gradient(circle at right top, rgba(255, 221, 228, 0.8), transparent 30%);
+    box-shadow: var(--shadow);
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      margin-bottom: 0.45rem;
+      color: var(--text-primary);
+    }
+
+    p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+  }
+
+  .status-badge {
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+
+    &.status-active {
+      background-color: rgba(103, 197, 154, 0.18);
+      color: #2f8d66;
+    }
+
+    &.status-cancelled {
+      background-color: rgba(234, 123, 147, 0.18);
+      color: #c55571;
+    }
+
+    &.status-completed {
+      background-color: rgba(142, 184, 255, 0.22);
+      color: #4f7fda;
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.76);
+    box-shadow: var(--shadow);
+
+    p {
+      margin-bottom: 2rem;
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+    }
+  }
+}
+
+// Made with Bob

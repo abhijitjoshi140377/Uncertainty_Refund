@@ -1,0 +1,184 @@
+.refund-comparator {
+  .page-header {
+    margin-bottom: 2rem;
+    padding: 1.8rem 2rem;
+    border-radius: 30px;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(246, 240, 255, 0.82)),
+      radial-gradient(circle at right top, rgba(255, 220, 228, 0.78), transparent 30%);
+    box-shadow: var(--shadow);
+
+    h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      margin-bottom: 0.35rem;
+      color: var(--text-primary);
+    }
+
+    p {
+      color: var(--text-secondary);
+      max-width: 720px;
+    }
+  }
+
+  .comparator-layout {
+    display: grid;
+    grid-template-columns: minmax(340px, 430px) 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .comparator-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .form-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+
+      h3 {
+        font-size: 1.05rem;
+        color: var(--text-primary);
+      }
+
+      label {
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+    }
+
+    .option-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .option-card {
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--text-primary);
+      border: 1px solid rgba(170, 156, 214, 0.2);
+      border-radius: 20px;
+      padding: 1rem;
+      font-weight: 700;
+      box-shadow: none;
+
+      &:hover {
+        transform: translateY(-2px);
+      }
+
+      &.selected {
+        background: linear-gradient(135deg, #8f7cff, #ff9db2);
+        color: white;
+        border-color: transparent;
+      }
+    }
+
+    .form-actions {
+      margin-top: 0.5rem;
+    }
+  }
+
+  .results-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .booking-summary,
+  .estimate-panel {
+    h3 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+  }
+
+  .summary-grid,
+  .estimate-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    div {
+      padding: 1rem;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    span {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+  }
+
+  .hero-metric {
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(143, 124, 255, 0.14), rgba(255, 157, 178, 0.18));
+    border: 1px solid rgba(143, 124, 255, 0.14);
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+
+    .metric-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    strong {
+      font-size: 2.3rem;
+      color: var(--text-primary);
+    }
+
+    .metric-subtitle {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+  }
+
+  .placeholder {
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+}
+
+@media (max-width: 1024px) {
+  .refund-comparator {
+    .comparator-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .refund-comparator {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+
+    .comparator-form .option-grid,
+    .summary-grid,
+    .estimate-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// Made with Bob
