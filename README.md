@@ -46,7 +46,7 @@ The Travel Refund Uncertainty Estimation System is an innovative AI-powered plat
 - **Multi-component analysis** (flights, hotels, visas, insurance)
 - **Real-time integration** with global risk indicators
 - **Machine learning-based** forecasting with historical data
-- **IBM Carbon Design** for professional UI/UX
+- **Modern responsive design** for professional UI/UX
 
 ## ✨ Features
 
@@ -86,7 +86,7 @@ The Travel Refund Uncertainty Estimation System is an innovative AI-powered plat
 
 ### Frontend
 - **Framework**: React 18.2
-- **UI Library**: IBM Carbon Design System
+- **UI Library**: Custom React Components
 - **Build Tool**: Vite 5.0
 - **Charts**: Recharts 2.10
 - **Routing**: React Router 6.20
@@ -550,7 +550,7 @@ When you first run the application:
    - Follow React best practices
    - Use functional components with hooks
    - Keep components small and reusable
-   - Use Carbon Design components
+   - Use modern UI components
    - Implement proper error handling
 
 ### Security
@@ -659,10 +659,10 @@ This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
-- IBM Carbon Design System
 - FastAPI Framework
 - React Community
 - scikit-learn Contributors
+- Open Source Community
 
 ## 📞 Support
 
@@ -672,7 +672,7 @@ For support, please contact:
 
 ---
 
-**Made with ❤️ using IBM Carbon Design System**
+**Made with ❤️ using React and FastAPI**
 
-**Version**: 1.0.0  
-**Last Updated**: May 16, 2026
+**Version**: 1.0.0
+**Last Updated**: May 18, 2026
