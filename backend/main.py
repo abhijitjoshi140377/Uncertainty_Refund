@@ -1,9 +1,9 @@
 """
 Travel Refund Uncertainty Estimation System - Main Application
-FastAPI backend with ML-powered refund prediction
+FastAPI backend with ML-powered refund prediction and MCP HTTP endpoint
 """
 
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
@@ -17,6 +17,7 @@ from schemas import (
     RiskEventCreate, RiskEventResponse, HistoricalRefundResponse
 )
 import crud
+from mcp_endpoint_simple import router as mcp_router
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -30,7 +31,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -39,25 +40,28 @@ app.add_middleware(
 # Initialize refund estimator
 estimator = RefundEstimator()
 
+# Include MCP router for ICA integration
+app.include_router(mcp_router)
+
 
 @app.on_event("startup")
 async def startup_event():
     """Initialize database and load ML models on startup"""
-    print("🚀 Starting Travel Refund Uncertainty Estimation System...")
+    print("[STARTUP] Starting Travel Refund Uncertainty Estimation System...")
     init_db()
-    print("✅ Database initialized")
+    print("[SUCCESS] Database initialized")
     
     # Generate synthetic data if database is empty
     db = next(get_db())
     if crud.get_bookings_count(db) == 0:
-        print("📊 Generating synthetic data...")
+        print("[INFO] Generating synthetic data...")
         generate_synthetic_data(db)
-        print("✅ Synthetic data generated")
+        print("[SUCCESS] Synthetic data generated")
     
-    print("🤖 Loading ML models...")
+    print("[INFO] Loading ML models...")
     estimator.train_models(db)
-    print("✅ ML models loaded")
-    print("🎉 System ready!")
+    print("[SUCCESS] ML models loaded")
+    print("[SUCCESS] System ready!")
 
 
 @app.get("/")

@@ -1,0 +1,525 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "refund": "https://refund-estimation.example.com/schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#"
+  },
+  "@graph": [
+    {
+      "@id": "refund:RefundEstimationSystem",
+      "@type": "SoftwareApplication",
+      "name": "Travel Refund Uncertainty Estimation System",
+      "description": "AI-powered refund prediction platform for force majeure events in travel bookings",
+      "version": "1.0.0",
+      "applicationCategory": "Travel & Tourism",
+      "applicationSubCategory": "Refund Management, Risk Assessment",
+      "author": {
+        "@type": "Person",
+        "name": "Abhijit Joshi"
+      },
+      "dateCreated": "2026-05-16",
+      "dateModified": "2026-05-21",
+      "url": "https://github.com/abhijitjoshi140377/Uncertainty_Refund"
+    },
+    {
+      "@id": "refund:TravelBooking",
+      "@type": "Class",
+      "name": "TravelBooking",
+      "description": "A travel booking with multiple components (flight, hotel, visa, insurance)",
+      "property": [
+        {
+          "@type": "Property",
+          "name": "id",
+          "description": "Unique booking identifier",
+          "rangeIncludes": "xsd:integer"
+        },
+        {
+          "@type": "Property",
+          "name": "booking_reference",
+          "description": "Unique booking reference code",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "customer_name",
+          "description": "Customer's full name",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "customer_email",
+          "description": "Customer's email address",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "booking_date",
+          "description": "Date when booking was created",
+          "rangeIncludes": "xsd:dateTime"
+        },
+        {
+          "@type": "Property",
+          "name": "travel_date",
+          "description": "Date of travel",
+          "rangeIncludes": "xsd:dateTime"
+        },
+        {
+          "@type": "Property",
+          "name": "destination",
+          "description": "Travel destination",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "origin",
+          "description": "Travel origin",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "total_cost",
+          "description": "Total booking cost",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "status",
+          "description": "Booking status",
+          "rangeIncludes": {
+            "@type": "Enumeration",
+            "values": ["active", "cancelled", "completed", "refunded"]
+          }
+        }
+      ]
+    },
+    {
+      "@id": "refund:BookingComponent",
+      "@type": "Class",
+      "name": "BookingComponent",
+      "description": "Individual component of a booking (flight, hotel, visa, insurance)",
+      "property": [
+        {
+          "@type": "Property",
+          "name": "id",
+          "description": "Component identifier",
+          "rangeIncludes": "xsd:integer"
+        },
+        {
+          "@type": "Property",
+          "name": "component_type",
+          "description": "Type of component",
+          "rangeIncludes": {
+            "@type": "Enumeration",
+            "values": ["flight", "hotel", "visa", "insurance"]
+          }
+        },
+        {
+          "@type": "Property",
+          "name": "provider_name",
+          "description": "Service provider name",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "cost",
+          "description": "Component cost",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "is_refundable",
+          "description": "Whether component is refundable",
+          "rangeIncludes": "xsd:boolean"
+        },
+        {
+          "@type": "Property",
+          "name": "cancellation_fee",
+          "description": "Cancellation fee amount",
+          "rangeIncludes": "xsd:float"
+        }
+      ]
+    },
+    {
+      "@id": "refund:RefundEstimate",
+      "@type": "Class",
+      "name": "RefundEstimate",
+      "description": "AI-generated refund estimate with confidence intervals",
+      "property": [
+        {
+          "@type": "Property",
+          "name": "id",
+          "description": "Estimate identifier",
+          "rangeIncludes": "xsd:integer"
+        },
+        {
+          "@type": "Property",
+          "name": "booking_id",
+          "description": "Associated booking ID",
+          "rangeIncludes": "xsd:integer"
+        },
+        {
+          "@type": "Property",
+          "name": "estimate_date",
+          "description": "Date estimate was generated",
+          "rangeIncludes": "xsd:dateTime"
+        },
+        {
+          "@type": "Property",
+          "name": "expected_refund_amount",
+          "description": "Expected refund amount",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "expected_refund_percentage",
+          "description": "Expected refund percentage",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "confidence_lower",
+          "description": "Lower bound of 95% confidence interval",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "confidence_upper",
+          "description": "Upper bound of 95% confidence interval",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "confidence_level",
+          "description": "Confidence level (typically 0.95)",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "current_risk_level",
+          "description": "Current risk level",
+          "rangeIncludes": {
+            "@type": "Enumeration",
+            "values": ["low", "medium", "high", "critical"]
+          }
+        },
+        {
+          "@type": "Property",
+          "name": "risk_score",
+          "description": "Risk score (0-100)",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "best_case_refund",
+          "description": "Best case scenario refund",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "worst_case_refund",
+          "description": "Worst case scenario refund",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "most_likely_refund",
+          "description": "Most likely refund amount",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "model_version",
+          "description": "ML model version used",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "prediction_confidence",
+          "description": "Model prediction confidence",
+          "rangeIncludes": "xsd:float"
+        }
+      ]
+    },
+    {
+      "@id": "refund:RiskEvent",
+      "@type": "Class",
+      "name": "RiskEvent",
+      "description": "Global force majeure event affecting travel",
+      "property": [
+        {
+          "@type": "Property",
+          "name": "id",
+          "description": "Event identifier",
+          "rangeIncludes": "xsd:integer"
+        },
+        {
+          "@type": "Property",
+          "name": "event_type",
+          "description": "Type of force majeure event",
+          "rangeIncludes": {
+            "@type": "Enumeration",
+            "values": ["war", "pandemic", "natural_disaster", "political_unrest", "terrorism"]
+          }
+        },
+        {
+          "@type": "Property",
+          "name": "severity",
+          "description": "Event severity level",
+          "rangeIncludes": {
+            "@type": "Enumeration",
+            "values": ["low", "medium", "high", "critical"]
+          }
+        },
+        {
+          "@type": "Property",
+          "name": "affected_region",
+          "description": "Geographic region affected",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "start_date",
+          "description": "Event start date",
+          "rangeIncludes": "xsd:dateTime"
+        },
+        {
+          "@type": "Property",
+          "name": "end_date",
+          "description": "Event end date (if applicable)",
+          "rangeIncludes": "xsd:dateTime"
+        },
+        {
+          "@type": "Property",
+          "name": "description",
+          "description": "Event description",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "is_active",
+          "description": "Whether event is currently active",
+          "rangeIncludes": "xsd:boolean"
+        }
+      ]
+    },
+    {
+      "@id": "refund:ProviderPolicy",
+      "@type": "Class",
+      "name": "ProviderPolicy",
+      "description": "Service provider refund policy",
+      "property": [
+        {
+          "@type": "Property",
+          "name": "id",
+          "description": "Policy identifier",
+          "rangeIncludes": "xsd:integer"
+        },
+        {
+          "@type": "Property",
+          "name": "provider_name",
+          "description": "Provider name",
+          "rangeIncludes": "xsd:string"
+        },
+        {
+          "@type": "Property",
+          "name": "provider_type",
+          "description": "Type of provider",
+          "rangeIncludes": {
+            "@type": "Enumeration",
+            "values": ["flight", "hotel", "visa", "insurance"]
+          }
+        },
+        {
+          "@type": "Property",
+          "name": "standard_refund_percentage",
+          "description": "Standard refund percentage",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "force_majeure_refund_percentage",
+          "description": "Force majeure refund percentage",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "cancellation_fee",
+          "description": "Cancellation fee",
+          "rangeIncludes": "xsd:float"
+        },
+        {
+          "@type": "Property",
+          "name": "processing_time_days",
+          "description": "Refund processing time in days",
+          "rangeIncludes": "xsd:integer"
+        }
+      ]
+    },
+    {
+      "@id": "refund:RefundEstimationMethod",
+      "@type": "DefinedTerm",
+      "name": "Refund Estimation Method",
+      "description": "AI-powered method for estimating travel refunds considering force majeure events",
+      "termCode": "refund-estimation-v1",
+      "inDefinedTermSet": {
+        "@type": "DefinedTermSet",
+        "name": "Refund Estimation Methods"
+      },
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "ml_models",
+          "value": ["random_forest", "gradient_boosting", "rule_based", "ensemble"]
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "features",
+          "value": ["component_type", "event_type", "severity", "days_before_travel", "had_insurance", "was_force_majeure"]
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "confidence_level",
+          "value": "0.95"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "prediction_method",
+          "value": "ensemble_weighted_average"
+        }
+      ]
+    },
+    {
+      "@id": "refund:RiskAssessmentMethod",
+      "@type": "DefinedTerm",
+      "name": "Risk Assessment Method",
+      "description": "Method for assessing travel risk based on global events",
+      "termCode": "risk-assessment-v1",
+      "additionalProperty": [
+        {
+          "@type": "PropertyValue",
+          "name": "risk_levels",
+          "value": ["low", "medium", "high", "critical"]
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "scoring_range",
+          "value": "0-100"
+        },
+        {
+          "@type": "PropertyValue",
+          "name": "factors",
+          "value": ["active_events_in_region", "event_severity", "historical_patterns"]
+        }
+      ]
+    },
+    {
+      "@id": "refund:APIEndpoints",
+      "@type": "WebAPI",
+      "name": "Refund Estimation API",
+      "description": "RESTful API for travel refund estimation",
+      "documentation": "https://famished-vertebrae-basil.ngrok-free.dev/api/docs",
+      "potentialAction": [
+        {
+          "@type": "Action",
+          "name": "create_booking",
+          "description": "Create a new travel booking",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/bookings",
+            "httpMethod": "POST"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_bookings",
+          "description": "Retrieve all bookings",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/bookings?skip={skip}&limit={limit}",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_booking_details",
+          "description": "Get specific booking details",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/bookings/{booking_id}",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "estimate_refund",
+          "description": "Generate AI-powered refund estimate",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/estimate-refund/{booking_id}",
+            "httpMethod": "POST"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_risk_events",
+          "description": "Get current global risk events",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/risk-events?active_only={active_only}",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_regional_risk",
+          "description": "Get risk assessment for specific region",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/risk-events/region/{region}",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_historical_refunds",
+          "description": "Get historical refund data",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/historical-refunds",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_refund_statistics",
+          "description": "Get aggregated refund statistics",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/statistics/refund-rates",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_provider_policies",
+          "description": "Get provider refund policies",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/providers",
+            "httpMethod": "GET"
+          }
+        },
+        {
+          "@type": "Action",
+          "name": "get_provider_policy",
+          "description": "Get specific provider policy",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "/api/providers/{provider_name}",
+            "httpMethod": "GET"
+          }
+        }
+      ]
+    }
+  ]
+}

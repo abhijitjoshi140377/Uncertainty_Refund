@@ -1,0 +1,91 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Refund Estimation MCP Server",
+    "description": "MCP server for travel refund uncertainty estimation",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://mcp.context-studio.cloud.ibm.com/v1/contexts/ctx_66c38bc33975",
+      "description": "Context Studio MCP Endpoint"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "summary": "MCP JSON-RPC Endpoint",
+        "description": "Call MCP tools using JSON-RPC 2.0 protocol",
+        "operationId": "callMCPTool",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "jsonrpc": {
+                    "type": "string",
+                    "enum": ["2.0"]
+                  },
+                  "method": {
+                    "type": "string",
+                    "enum": ["tools/list", "tools/call"]
+                  },
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "arguments": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  "id": {
+                    "type": "integer"
+                  }
+                },
+                "required": ["jsonrpc", "method", "id"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "ContextStudioKey": [],
+            "MCPGatewayToken": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ContextStudioKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Context-Studio-Key"
+      },
+      "MCPGatewayToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-MCP-Gateway-Token"
+      }
+    }
+  }
+}
+

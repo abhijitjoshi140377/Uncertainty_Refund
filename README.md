@@ -33,6 +33,8 @@ cd Uncertainty_Refund
 - [Test Cases](#test-cases)
 - [Best Practices](#best-practices)
 - [Troubleshooting](#troubleshooting)
+- [MCP Server for IBM ICA Agents](#-mcp-server-for-ibm-ica-agents)
+- [ICA-MCP Context Forge Bulk Import](#ica-mcp-context-forge-bulk-import)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -46,6 +48,7 @@ The Travel Refund Uncertainty Estimation System is an innovative AI-powered plat
 - **Multi-component analysis** (flights, hotels, visas, insurance)
 - **Real-time integration** with global risk indicators
 - **Machine learning-based** forecasting with historical data
+- **AI Agent Integration** via MCP server for conversational AI access
 - **Modern responsive design** for professional UI/UX
 
 ## ✨ Features
@@ -74,6 +77,12 @@ The Travel Refund Uncertainty Estimation System is an innovative AI-powered plat
    - Historical refund statistics
    - Component-wise analysis
    - Event-type based insights
+
+5. **MCP Server (AI Agent Integration)**
+   - Model Context Protocol server for AI agents
+   - 11 tools for booking and refund operations
+   - Compatible with Claude, GPT, and custom AI systems
+   - Real-time API access for conversational agents
    - Visual data representation
 
 ## 🛠 Technology Stack
@@ -91,6 +100,12 @@ The Travel Refund Uncertainty Estimation System is an innovative AI-powered plat
 - **Charts**: Recharts 2.10
 - **Routing**: React Router 6.20
 - **HTTP Client**: Axios 1.6
+
+### MCP Server (AI Agent Integration)
+- **Protocol**: Model Context Protocol (MCP)
+- **Purpose**: Expose API endpoints to ICA agents (Claude, GPT, etc.)
+- **Tools**: 11 AI-accessible tools for booking and refund estimation
+- **Integration**: Compatible with Claude Desktop, Cline, and custom AI agents
 
 ### Development Tools
 - **Testing**: pytest, React Testing Library
@@ -349,6 +364,14 @@ Uncertainty_Refund/
 │   └── tests/
 │       ├── __init__.py
 │       └── test_api.py         # API endpoint tests
+├── mcp_server/
+│   ├── refund_mcp_server.py    # MCP server for AI agents
+│   ├── requirements.txt        # MCP dependencies
+│   ├── config.json             # MCP configuration
+│   ├── example_usage.py        # Usage examples
+│   ├── start_mcp_server.bat    # Windows startup script
+│   ├── start_mcp_server.sh     # Unix startup script
+│   └── README.md               # MCP server documentation
 ├── frontend/
 │   ├── package.json            # Node.js dependencies
 │   ├── vite.config.js          # Vite configuration
@@ -646,6 +669,332 @@ Contributions are welcome! Please follow these steps:
 2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
 3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
+
+## 🤖 MCP Server for IBM ICA Agents
+
+The project includes a **production-ready** MCP (Model Context Protocol) server optimized for IBM ICA (Intelligent Conversational Agents) that exposes the refund estimation API to AI agents like Claude, GPT, and custom conversational systems.
+
+### Production Features
+
+✅ **Comprehensive Error Handling** - Structured error responses with error types
+✅ **Request Timeouts** - 30-second timeout with automatic retry (3 attempts)
+✅ **Structured JSON Responses** - Consistent success/error format
+✅ **Logging & Monitoring** - Full request/response logging
+✅ **Input Validation** - Schema-based parameter validation
+✅ **Retry Logic** - Automatic retry on transient failures
+
+### Quick Start
+
+```bash
+# Navigate to MCP server directory
+cd mcp_server
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the production MCP server (ensure backend is running first)
+python refund_mcp_server_production.py
+```
+
+### Available Tools for IBM ICA Agents
+
+The MCP server provides **11 production-ready tools** with comprehensive documentation:
+
+1. **create_booking** - Create travel bookings with validation
+   - Full input schema with field validation
+   - Email format validation
+   - Component type enum validation
+   - Returns booking reference and total cost
+
+2. **get_bookings** - Retrieve all bookings with pagination
+   - Skip/limit parameters (max 1000)
+   - Returns total count and pagination metadata
+
+3. **get_booking_details** - Get specific booking information
+   - Validates booking ID
+   - Returns complete booking with all components
+   - 404 error if booking not found
+
+4. **estimate_refund** - Generate AI-powered refund estimates
+   - ML model selection (auto/random_forest/gradient_boosting/rule_based)
+   - Calamity type and severity parameters
+   - Returns confidence intervals and risk scores
+   - Best/worst/most likely scenarios
+
+5. **get_refund_estimates** - Get estimate history for a booking
+   - Track estimates over time
+   - Compare different scenarios
+
+6. **get_risk_events** - Query global risk events
+   - Filter by active status
+   - Returns severity levels and affected regions
+
+7. **get_regional_risk** - Check regional risk assessment
+   - Aggregate risk level calculation
+   - List of active events in region
+
+8. **get_historical_refunds** - Access historical refund data
+   - Filter by component type and event type
+   - Limit parameter (max 1000 records)
+
+9. **get_refund_statistics** - Get aggregated statistics
+   - Grouped by component and event type
+   - Average refund percentages and amounts
+
+10. **get_provider_policies** - Query provider refund policies
+    - Filter by provider type
+    - Returns refund percentages and fees
+
+11. **get_provider_policy** - Get specific provider details
+    - Complete policy text
+    - Force majeure clauses
+
+### Response Format
+
+**Success Response:**
+```json
+{
+  "status": "success",
+  "message": "Operation completed successfully",
+  "data": { /* response data */ },
+  "tool": "tool_name",
+  "timestamp": "2026-05-20T10:00:00Z"
+}
+```
+
+**Error Response:**
+```json
+{
+  "status": "error",
+  "error_type": "timeout|api_error|http_error|unexpected_error",
+  "message": "Error description",
+  "details": { /* additional error info */ },
+  "tool": "tool_name",
+  "timestamp": "2026-05-20T10:00:00Z"
+}
+```
+
+### Integration with IBM ICA Systems
+
+**Claude Desktop**: Add to `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "refund-estimation-production": {
+      "command": "python",
+      "args": ["path/to/mcp_server/refund_mcp_server_production.py"],
+      "env": {
+        "API_BASE_URL": "http://localhost:8000/api"
+      }
+    }
+  }
+}
+```
+
+**Cline (VS Code)**: Add to MCP settings:
+```json
+{
+  "mcpServers": {
+    "refund-estimation": {
+      "command": "python",
+      "args": ["C:/Users/AbhijitJoshi/Uncertainty_Refund/mcp_server/refund_mcp_server_production.py"]
+    }
+  }
+}
+```
+
+### Configuration
+
+**Environment Variables:**
+- `API_BASE_URL` - FastAPI backend URL (default: http://localhost:8000/api)
+- `REQUEST_TIMEOUT` - Request timeout in seconds (default: 30)
+- `MAX_RETRIES` - Maximum retry attempts (default: 3)
+
+**Logging:**
+- All requests and responses are logged
+- Error tracking with stack traces
+- Performance monitoring
+
+### Error Handling
+
+The production MCP server handles:
+- **Timeout errors** - Automatic retry with exponential backoff
+- **HTTP 4xx errors** - Client errors (no retry)
+- **HTTP 5xx errors** - Server errors (automatic retry)
+- **Network errors** - Connection failures (automatic retry)
+- **Validation errors** - Input schema validation
+- **Unexpected errors** - Graceful error responses
+
+### 🔌 Native MCP SSE Endpoint
+
+The FastAPI backend now includes a **native MCP (Model Context Protocol) SSE endpoint** at `/mcp` that exposes all 11 API tools using the MCP protocol with Server-Sent Events transport.
+
+#### Quick Start
+
+```bash
+# Backend already running on http://localhost:8000
+# MCP endpoint automatically available at:
+http://localhost:8000/mcp
+```
+
+#### Key Features
+
+✅ **Native Integration** - Built directly into FastAPI backend
+✅ **Real-Time Communication** - SSE transport for instant responses
+✅ **11 Production Tools** - All API endpoints exposed as MCP tools
+✅ **Structured Responses** - Consistent JSON format
+✅ **No External Server** - No separate MCP server process needed
+✅ **Ngrok Compatible** - Works with ngrok tunnels
+
+#### MCP Server URLs
+
+- **Local**: `http://localhost:8000/mcp`
+- **Ngrok**: `https://famished-vertebrae-basil.ngrok-free.app/mcp`
+- **Production**: `https://your-domain.com/mcp`
+
+#### Configure AI Agent
+
+**Claude Desktop** (`claude_desktop_config.json`):
+```json
+{
+  "mcpServers": {
+    "refund-estimation-sse": {
+      "url": "http://localhost:8000/mcp",
+      "transport": "sse"
+    }
+  }
+}
+```
+
+**Cline (VS Code)**:
+```json
+{
+  "mcpServers": {
+    "refund-estimation-sse": {
+      "url": "http://localhost:8000/mcp",
+      "transport": "sse"
+    }
+  }
+}
+```
+
+#### Available via MCP
+
+All 11 tools are accessible via the MCP protocol:
+- create_booking, get_bookings, get_booking_details
+- estimate_refund, get_refund_estimates
+- get_risk_events, get_regional_risk
+- get_historical_refunds, get_refund_statistics
+- get_provider_policies, get_provider_policy
+
+#### Comprehensive Guide
+
+📖 **[MCP SSE Endpoint Integration Guide](MCP_SSE_ENDPOINT_GUIDE.md)**
+
+This guide includes:
+- Complete tool documentation with input schemas
+- Response format examples
+- AI agent configuration
+- Ngrok setup instructions
+- Testing procedures
+- Production deployment checklist
+- Troubleshooting guide
+
+### ICA-MCP Context Forge Bulk Import
+
+For IBM ICA users, we provide a **ready-to-import bulk configuration file** that allows you to import all 11 API endpoints as MCP tools in a single operation.
+
+**File**: `refund-api-bulk-import.json`
+
+#### Quick Import Steps
+
+1. **Start Backend**: Ensure FastAPI backend is running on `http://localhost:8000`
+2. **Access Context Forge**: Navigate to IBM ICA → Context Forge → "Add New Tool from REST API"
+3. **Bulk Import**: Select "Bulk Import" and upload `refund-api-bulk-import.json`
+4. **Review & Import**: Review the 11 tools and click "Import All"
+5. **Test**: Use ICA's test interface to verify each tool
+
+#### What's Included
+
+The bulk import file includes complete configurations for all 11 endpoints:
+
+✅ **create-booking** - Create travel bookings with validation
+✅ **get-bookings** - List all bookings with pagination
+✅ **get-booking-details** - Get specific booking information
+✅ **estimate-refund** - AI-powered refund estimation
+✅ **get-refund-estimates** - List refund estimate history
+✅ **get-risk-events** - Query global risk events
+✅ **get-regional-risk** - Regional risk assessment
+✅ **get-historical-refunds** - Historical refund data
+✅ **get-refund-statistics** - Aggregated statistics
+✅ **get-provider-policies** - List provider policies
+✅ **get-provider-policy** - Get specific provider details
+
+#### Features
+
+- **Complete Input Schemas** - Full validation with types, enums, and constraints
+- **Detailed Descriptions** - AI-optimized tool descriptions with use cases
+- **Response Filtering** - JSONPath filters for clean data extraction
+- **Path Parameters** - Automatic substitution for URLs like `/bookings/{booking_id}`
+- **Pagination Support** - Skip/limit parameters for large datasets
+- **Error Handling** - Proper HTTP status codes and validation errors
+- **Tags** - Organized by category (booking, refund, risk, analytics, provider)
+
+#### Example AI Agent Prompts
+
+Once imported, AI agents can use natural language:
+
+```
+User: "Create a booking for John Doe traveling to France from June 1-15, 2026"
+Agent: [Uses create-booking tool with provided details]
+
+User: "What's the refund estimate if there's a natural disaster?"
+Agent: [Uses estimate-refund tool with high severity]
+
+User: "Show me the risk level for Ukraine"
+Agent: [Uses get-regional-risk tool]
+
+User: "What's Air India's cancellation policy?"
+Agent: [Uses get-provider-policy tool]
+```
+
+#### Production Deployment
+
+For production, update the base URL in the bulk import file:
+
+```bash
+# Find and replace in refund-api-bulk-import.json
+From: http://localhost:8000
+To: https://api.yourcompany.com
+```
+
+#### Comprehensive Guide
+
+For detailed instructions, configuration options, and troubleshooting:
+
+📖 **[ICA-MCP Context Forge Integration Guide](ICA_MCP_CONTEXT_FORGE_GUIDE.md)**
+
+This guide includes:
+- Step-by-step import instructions
+- Tool descriptions and use cases
+- Input schema details
+- Authentication configuration
+- Response filtering with JSONPath
+- Pagination examples
+- Error handling
+- Production deployment checklist
+- Troubleshooting common issues
+
+### For Detailed Documentation
+
+- **MCP SSE Endpoint Guide**: [MCP_SSE_ENDPOINT_GUIDE.md](MCP_SSE_ENDPOINT_GUIDE.md) ⭐ **NEW**
+- **ICA Context Forge Guide**: [ICA_MCP_CONTEXT_FORGE_GUIDE.md](ICA_MCP_CONTEXT_FORGE_GUIDE.md)
+- **Bulk Import File**: [refund-api-bulk-import.json](refund-api-bulk-import.json)
+- **MCP Server Guide**: [mcp_server/README.md](mcp_server/README.md)
+- **API Enhancement Guide**: [backend/API_ENHANCEMENT_GUIDE.md](backend/API_ENHANCEMENT_GUIDE.md)
+- **Context Schema**: [context_schema.yaml](context_schema.yaml)
+- **MCP Endpoint Code**: [backend/mcp_endpoint.py](backend/mcp_endpoint.py) ⭐ **NEW**
+
 5. Open a Pull Request
 
 ## 📄 License

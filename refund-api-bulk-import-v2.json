@@ -1,0 +1,465 @@
+[
+  {
+    "name": "v2-create-booking",
+    "displayName": "Create Travel Booking (v2)",
+    "url": "http://localhost:8000/api/bookings",
+    "integration_type": "REST",
+    "request_type": "POST",
+    "description": "Create a new travel booking with multiple components (flights, hotels, visa, insurance). Returns booking reference and total cost calculation.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "customer_name": {
+          "type": "string",
+          "description": "Full name of the customer",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "customer_email": {
+          "type": "string",
+          "format": "email",
+          "description": "Customer's email address"
+        },
+        "travel_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Travel date (ISO 8601 format)"
+        },
+        "destination": {
+          "type": "string",
+          "description": "Destination location",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "origin": {
+          "type": "string",
+          "description": "Origin location",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "components": {
+          "type": "array",
+          "description": "List of booking components (flights, hotels, etc.)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "component_type": {
+                "type": "string",
+                "description": "Type of booking component (flight, hotel, visa, insurance)"
+              },
+              "provider_name": {
+                "type": "string",
+                "description": "Service provider name"
+              },
+              "cost": {
+                "type": "number",
+                "description": "Component cost in INR",
+                "minimum": 0
+              },
+              "refund_policy": {
+                "type": "string",
+                "description": "Refund policy details"
+              },
+              "is_refundable": {
+                "type": "boolean",
+                "description": "Whether component is refundable",
+                "default": false
+              },
+              "cancellation_fee": {
+                "type": "number",
+                "description": "Cancellation fee amount",
+                "default": 0
+              }
+            },
+            "required": [
+              "component_type",
+              "provider_name",
+              "cost"
+            ]
+          }
+        }
+      },
+      "required": [
+        "customer_name",
+        "customer_email",
+        "travel_date",
+        "destination",
+        "origin",
+        "components"
+      ]
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "booking",
+      "create",
+      "travel",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-bookings",
+    "displayName": "List All Bookings (v2)",
+    "url": "http://localhost:8000/api/bookings",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Retrieve paginated list of all travel bookings with optional filtering by customer email or destination country.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "skip": {
+          "type": "integer",
+          "description": "Number of records to skip for pagination",
+          "default": 0,
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of records to return",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 1000
+        }
+      }
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "booking",
+      "list",
+      "query",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-booking-details",
+    "displayName": "Get Booking Details (v2)",
+    "url": "http://localhost:8000/api/bookings/{booking_id}",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Retrieve detailed information for a specific booking including all components, customer details, and travel dates.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "integer",
+          "description": "Unique booking identifier",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "booking_id"
+      ]
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "booking",
+      "details",
+      "query",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-estimate-refund",
+    "displayName": "AI Refund Estimation (v2)",
+    "url": "http://localhost:8000/api/estimate-refund/{booking_id}",
+    "integration_type": "REST",
+    "request_type": "POST",
+    "description": "Generate AI-powered refund estimate using machine learning models. Considers force majeure events, provider policies, and historical data. Returns expected refund with 95% confidence intervals.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "integer",
+          "description": "Booking ID to estimate refund for",
+          "minimum": 1
+        },
+        "selected_model": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "random_forest",
+            "gradient_boosting",
+            "rule_based"
+          ],
+          "description": "ML model to use for estimation",
+          "default": "auto"
+        },
+        "calamity_type": {
+          "type": "string",
+          "description": "Type of calamity/event (auto for automatic detection)",
+          "default": "auto"
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ],
+          "description": "Severity level of the event",
+          "default": "high"
+        }
+      },
+      "required": [
+        "booking_id"
+      ]
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "refund",
+      "estimation",
+      "ai",
+      "ml",
+      "prediction",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-refund-estimates",
+    "displayName": "List Refund Estimates by Booking (v2)",
+    "url": "http://localhost:8000/api/estimates/{booking_id}",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Retrieve all refund estimates for a specific booking ID.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "integer",
+          "description": "Booking ID to get estimates for",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "booking_id"
+      ]
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "refund",
+      "estimation",
+      "list",
+      "history",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-risk-events",
+    "displayName": "Global Risk Events (v2)",
+    "url": "http://localhost:8000/api/risk-events",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Retrieve current global risk events (natural disasters, political unrest, pandemics) that may affect travel and refunds.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "active_only": {
+          "type": "boolean",
+          "description": "Filter to show only active events",
+          "default": true
+        }
+      }
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "risk",
+      "events",
+      "global",
+      "monitoring",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-regional-risk",
+    "displayName": "Regional Risk Assessment (v2)",
+    "url": "http://localhost:8000/api/risk-events/region/{region}",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Get risk assessment for a specific geographic region including active events, risk score, and travel advisories.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "region": {
+          "type": "string",
+          "description": "Geographic region name (e.g., 'Ukraine', 'Middle East', 'Southeast Asia')"
+        }
+      },
+      "required": [
+        "region"
+      ]
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "risk",
+      "regional",
+      "assessment",
+      "monitoring",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-historical-refunds",
+    "displayName": "Historical Refund Data (v2)",
+    "url": "http://localhost:8000/api/historical-refunds",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Retrieve historical refund data for analytics and trend analysis. Includes actual refund amounts, processing times, and outcomes.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "component_type": {
+          "type": "string",
+          "description": "Filter by component type (flight, hotel, visa, insurance)"
+        },
+        "event_type": {
+          "type": "string",
+          "description": "Filter by event type"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of records to return",
+          "default": 100,
+          "minimum": 1
+        }
+      }
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "analytics",
+      "historical",
+      "refund",
+      "data",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-refund-statistics",
+    "displayName": "Refund Statistics (v2)",
+    "url": "http://localhost:8000/api/statistics/refund-rates",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Get aggregated refund statistics including average refund amounts, success rates, processing times, and trends by event type.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {}
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "analytics",
+      "statistics",
+      "aggregated",
+      "metrics",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-provider-policies",
+    "displayName": "List Provider Policies (v2)",
+    "url": "http://localhost:8000/api/providers",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Retrieve cancellation and refund policies for all service providers (airlines, hotels, visa services, insurance companies).",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "provider_type": {
+          "type": "string",
+          "description": "Filter by provider type (airline, hotel, visa, insurance)"
+        }
+      }
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "provider",
+      "policies",
+      "cancellation",
+      "refund",
+      "refund-estimation"
+    ]
+  },
+  {
+    "name": "v2-get-provider-policy",
+    "displayName": "Get Provider Policy Details (v2)",
+    "url": "http://localhost:8000/api/providers/{provider_name}",
+    "integration_type": "REST",
+    "request_type": "GET",
+    "description": "Get detailed cancellation and refund policy for a specific service provider including refund percentages, timeframes, and conditions.",
+    "auth_type": "none",
+    "auth_value": "",
+    "headers": {
+      "Accept": "application/json"
+    },
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "provider_name": {
+          "type": "string",
+          "description": "Name of the service provider (e.g., 'Air India', 'Taj Hotels', 'ICICI Lombard')"
+        }
+      },
+      "required": [
+        "provider_name"
+      ]
+    },
+    "jsonpath_filter": "$",
+    "tags": [
+      "provider",
+      "policy",
+      "details",
+      "cancellation",
+      "refund-estimation"
+    ]
+  }
+]

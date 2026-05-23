@@ -1,0 +1,53 @@
+[
+  {
+    "id": 1,
+    "booking_id": 1,
+    "estimate_date": "2026-05-20T14:30:00Z",
+    "expected_refund_amount": 68000,
+    "expected_refund_percentage": 85.0,
+    "confidence_lower": 60800,
+    "confidence_upper": 75200,
+    "confidence_level": 0.95,
+    "current_risk_level": "high",
+    "risk_score": 85.0,
+    "best_case_refund": 76000,
+    "worst_case_refund": 56000,
+    "most_likely_refund": 68000,
+    "model_version": "v1.0",
+    "prediction_confidence": 0.92
+  },
+  {
+    "id": 2,
+    "booking_id": 2,
+    "estimate_date": "2026-05-20T15:00:00Z",
+    "expected_refund_amount": 97750,
+    "expected_refund_percentage": 85.0,
+    "confidence_lower": 87975,
+    "confidence_upper": 107525,
+    "confidence_level": 0.95,
+    "current_risk_level": "medium",
+    "risk_score": 65.0,
+    "best_case_refund": 109250,
+    "worst_case_refund": 80500,
+    "most_likely_refund": 97750,
+    "model_version": "v1.0",
+    "prediction_confidence": 0.88
+  },
+  {
+    "id": 3,
+    "booking_id": 3,
+    "estimate_date": "2026-05-20T15:30:00Z",
+    "expected_refund_amount": 57000,
+    "expected_refund_percentage": 60.0,
+    "confidence_lower": 47500,
+    "confidence_upper": 66500,
+    "confidence_level": 0.95,
+    "current_risk_level": "low",
+    "risk_score": 35.0,
+    "best_case_refund": 71250,
+    "worst_case_refund": 42750,
+    "most_likely_refund": 57000,
+    "model_version": "v1.0",
+    "prediction_confidence": 0.85
+  }
+]

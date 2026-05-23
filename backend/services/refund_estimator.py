@@ -24,13 +24,13 @@ class RefundEstimator:
         
     def train_models(self, db: Session):
         """Train ML models on historical refund data"""
-        print("  🤖 Training ML models...")
+        print("  [ML] Training ML models...")
         
         # Fetch historical data
         historical_data = db.query(HistoricalRefund).all()
         
         if len(historical_data) < 50:
-            print("  ⚠️  Insufficient training data, using default models")
+            print("  [WARN] Insufficient training data, using default models")
             self.is_trained = False
             return
         
@@ -66,7 +66,7 @@ class RefundEstimator:
             }
         
         self.is_trained = True
-        print(f"  ✅ Trained models for {len(self.models)} component types")
+        print(f"  [OK] Trained models for {len(self.models)} component types")
     
     def _extract_features(self, record) -> List[float]:
         """Extract numerical features from historical record"""

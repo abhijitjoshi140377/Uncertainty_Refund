@@ -1,0 +1,159 @@
+[
+  {
+    "id": 1,
+    "booking_reference": "BK-2026-001",
+    "customer_name": "Jane Smith",
+    "customer_email": "jane.smith@example.com",
+    "booking_date": "2026-05-15T10:30:00Z",
+    "travel_date": "2026-06-15T10:00:00Z",
+    "destination": "Paris",
+    "origin": "New York",
+    "total_cost": 80000,
+    "status": "active",
+    "components": [
+      {
+        "id": 1,
+        "component_type": "flight",
+        "provider_name": "Air France",
+        "cost": 50000,
+        "is_refundable": true,
+        "cancellation_fee": 5000
+      },
+      {
+        "id": 2,
+        "component_type": "hotel",
+        "provider_name": "Marriott",
+        "cost": 30000,
+        "is_refundable": true,
+        "cancellation_fee": 3000
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "booking_reference": "BK-2026-002",
+    "customer_email": "john.doe@example.com",
+    "booking_date": "2026-05-16T14:20:00Z",
+    "travel_date": "2026-07-20T08:00:00Z",
+    "destination": "Tokyo",
+    "origin": "Mumbai",
+    "total_cost": 115000,
+    "status": "active",
+    "components": [
+      {
+        "id": 3,
+        "component_type": "flight",
+        "provider_name": "Japan Airlines",
+        "cost": 75000,
+        "is_refundable": true,
+        "cancellation_fee": 7500
+      },
+      {
+        "id": 4,
+        "component_type": "hotel",
+        "provider_name": "Hilton",
+        "cost": 40000,
+        "is_refundable": true,
+        "cancellation_fee": 4000
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "booking_reference": "BK-2026-003",
+    "customer_name": "Alice Johnson",
+    "customer_email": "alice.j@example.com",
+    "booking_date": "2026-05-17T09:15:00Z",
+    "travel_date": "2026-08-10T12:00:00Z",
+    "destination": "London",
+    "origin": "Delhi",
+    "total_cost": 95000,
+    "status": "active",
+    "components": [
+      {
+        "id": 5,
+        "component_type": "flight",
+        "provider_name": "British Airways",
+        "cost": 60000,
+        "is_refundable": false,
+        "cancellation_fee": 15000
+      },
+      {
+        "id": 6,
+        "component_type": "hotel",
+        "provider_name": "Hyatt",
+        "cost": 25000,
+        "is_refundable": true,
+        "cancellation_fee": 2500
+      },
+      {
+        "id": 7,
+        "component_type": "visa",
+        "provider_name": "UK Visa Services",
+        "cost": 10000,
+        "is_refundable": false,
+        "cancellation_fee": 10000
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "booking_reference": "BK-2026-004",
+    "customer_name": "Bob Wilson",
+    "customer_email": "bob.w@example.com",
+    "booking_date": "2026-05-18T16:45:00Z",
+    "travel_date": "2026-09-05T14:30:00Z",
+    "destination": "Dubai",
+    "origin": "Bangalore",
+    "total_cost": 70000,
+    "status": "active",
+    "components": [
+      {
+        "id": 8,
+        "component_type": "flight",
+        "provider_name": "Emirates",
+        "cost": 45000,
+        "is_refundable": true,
+        "cancellation_fee": 4500
+      },
+      {
+        "id": 9,
+        "component_type": "hotel",
+        "provider_name": "Jumeirah",
+        "cost": 25000,
+        "is_refundable": true,
+        "cancellation_fee": 2500
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "booking_reference": "BK-2026-005",
+    "customer_name": "Carol Martinez",
+    "customer_email": "carol.m@example.com",
+    "booking_date": "2026-05-19T11:00:00Z",
+    "travel_date": "2026-10-15T09:00:00Z",
+    "destination": "Singapore",
+    "origin": "Chennai",
+    "total_cost": 85000,
+    "status": "active",
+    "components": [
+      {
+        "id": 10,
+        "component_type": "flight",
+        "provider_name": "Singapore Airlines",
+        "cost": 55000,
+        "is_refundable": true,
+        "cancellation_fee": 5500
+      },
+      {
+        "id": 11,
+        "component_type": "hotel",
+        "provider_name": "Marina Bay Sands",
+        "cost": 30000,
+        "is_refundable": true,
+        "cancellation_fee": 3000
+      }
+    ]
+  }
+]

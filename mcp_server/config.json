@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "refund-estimation": {
+      "command": "python",
+      "args": [
+        "refund_mcp_server.py"
+      ],
+      "env": {
+        "API_BASE_URL": "http://localhost:8000/api"
+      }
+    }
+  }
+}

@@ -1,0 +1,812 @@
+# Context Schema for Travel Refund Uncertainty Estimation System
+# This schema defines the structure and relationships of the Refund Intelligence Platform
+
+version: "1.0.0"
+name: "Travel Refund Uncertainty Estimation System"
+description: "AI-powered refund prediction platform for force majeure events"
+author: "Abhijit Joshi"
+repository: "https://github.com/abhijitjoshi140377/Uncertainty_Refund"
+
+# System Architecture
+architecture:
+  type: "full-stack"
+  components:
+    - backend
+    - frontend
+    - mcp_server
+    - database
+    - ml_models
+
+# Backend API Context
+backend:
+  framework: "FastAPI"
+  version: "0.109.0"
+  base_url: "http://localhost:8000"
+  api_prefix: "/api"
+  
+  # Database Configuration
+  database:
+    type: "SQLite"
+    orm: "SQLAlchemy"
+    file: "backend/refund_estimation.db"
+    tables:
+      - name: "travel_bookings"
+        description: "Main booking records"
+        primary_key: "id"
+        relationships:
+          - booking_components
+          - refund_estimates
+      
+      - name: "booking_components"
+        description: "Individual booking components (flight, hotel, visa, insurance)"
+        primary_key: "id"
+        foreign_keys:
+          - booking_id: "travel_bookings.id"
+      
+      - name: "risk_events"
+        description: "Global force majeure events"
+        primary_key: "id"
+        fields:
+          - event_type
+          - severity
+          - affected_region
+          - is_active
+      
+      - name: "historical_refunds"
+        description: "Historical refund data for ML training"
+        primary_key: "id"
+        fields:
+          - component_type
+          - refund_percentage
+          - event_type
+          - was_force_majeure
+      
+      - name: "refund_estimates"
+        description: "Generated refund predictions"
+        primary_key: "id"
+        foreign_keys:
+          - booking_id: "travel_bookings.id"
+      
+      - name: "provider_policies"
+        description: "Provider refund policies"
+        primary_key: "id"
+        fields:
+          - provider_name
+          - provider_type
+          - force_majeure_refund_percentage
+
+  # API Endpoints
+  endpoints:
+    # Health & Root
+    - path: "/"
+      method: "GET"
+      tags: ["Root"]
+      description: "API root with metadata"
+      response_model: "APIResponse"
+    
+    - path: "/api/health"
+      method: "GET"
+      tags: ["Health"]
+      description: "Health check endpoint"
+      response_model: "APIResponse[HealthCheckResponse]"
+    
+    # Booking Endpoints
+    - path: "/api/bookings"
+      method: "POST"
+      tags: ["Bookings"]
+      description: "Create new travel booking"
+      request_model: "BookingCreate"
+      response_model: "APIResponse[BookingResponse]"
+      status_code: 201
+      errors: [422]
+    
+    - path: "/api/bookings"
+      method: "GET"
+      tags: ["Bookings"]
+      description: "Get all bookings with pagination"
+      query_params:
+        - name: "skip"
+          type: "integer"
+          default: 0
+          description: "Number of records to skip"
+        - name: "limit"
+          type: "integer"
+          default: 100
+          description: "Maximum records to return"
+      response_model: "PaginatedResponse[BookingResponse]"
+    
+    - path: "/api/bookings/{booking_id}"
+      method: "GET"
+      tags: ["Bookings"]
+      description: "Get specific booking details"
+      path_params:
+        - name: "booking_id"
+          type: "integer"
+          required: true
+          description: "Unique booking ID"
+      response_model: "APIResponse[BookingResponse]"
+      errors: [404]
+    
+    # Refund Estimation Endpoints
+    - path: "/api/estimate-refund/{booking_id}"
+      method: "POST"
+      tags: ["Refund Estimation"]
+      description: "Generate AI-powered refund estimate"
+      path_params:
+        - name: "booking_id"
+          type: "integer"
+          required: true
+      request_model: "RefundEstimateRequest"
+      response_model: "APIResponse[RefundEstimateResponse]"
+      errors: [404, 500]
+      ml_models:
+        - random_forest
+        - gradient_boosting
+        - rule_based
+        - ensemble
+    
+    - path: "/api/estimates/{booking_id}"
+      method: "GET"
+      tags: ["Refund Estimation"]
+      description: "Get all estimates for a booking"
+      path_params:
+        - name: "booking_id"
+          type: "integer"
+      response_model: "APIResponse[List[RefundEstimateResponse]]"
+      errors: [404]
+    
+    # Risk Events Endpoints
+    - path: "/api/risk-events"
+      method: "GET"
+      tags: ["Risk Events"]
+      description: "Get current global risk events"
+      query_params:
+        - name: "active_only"
+          type: "boolean"
+          default: true
+      response_model: "APIResponse[List[RiskEventResponse]]"
+    
+    - path: "/api/risk-events"
+      method: "POST"
+      tags: ["Risk Events"]
+      description: "Create new risk event"
+      request_model: "RiskEventCreate"
+      response_model: "APIResponse[RiskEventResponse]"
+      status_code: 201
+      errors: [422]
+    
+    - path: "/api/risk-events/region/{region}"
+      method: "GET"
+      tags: ["Risk Events"]
+      description: "Get regional risk assessment"
+      path_params:
+        - name: "region"
+          type: "string"
+          required: true
+      response_model: "APIResponse[RegionalRiskResponse]"
+    
+    # Historical Data Endpoints
+    - path: "/api/historical-refunds"
+      method: "GET"
+      tags: ["Historical Data"]
+      description: "Get historical refund data"
+      query_params:
+        - name: "component_type"
+          type: "string"
+          enum: ["flight", "hotel", "visa", "insurance"]
+        - name: "event_type"
+          type: "string"
+          enum: ["war", "pandemic", "natural_disaster", "political_unrest"]
+        - name: "limit"
+          type: "integer"
+          default: 100
+      response_model: "APIResponse[List[HistoricalRefundResponse]]"
+    
+    - path: "/api/statistics/refund-rates"
+      method: "GET"
+      tags: ["Historical Data"]
+      description: "Get aggregated refund statistics"
+      response_model: "APIResponse[List[RefundStatistics]]"
+    
+    # Provider Policy Endpoints
+    - path: "/api/providers"
+      method: "GET"
+      tags: ["Provider Policies"]
+      description: "Get provider refund policies"
+      query_params:
+        - name: "provider_type"
+          type: "string"
+          enum: ["flight", "hotel", "visa", "insurance"]
+      response_model: "APIResponse[List[ProviderPolicyResponse]]"
+    
+    - path: "/api/providers/{provider_name}"
+      method: "GET"
+      tags: ["Provider Policies"]
+      description: "Get specific provider policy"
+      path_params:
+        - name: "provider_name"
+          type: "string"
+          required: true
+      response_model: "APIResponse[ProviderPolicyResponse]"
+      errors: [404]
+
+  # Data Models
+  models:
+    # Request Models
+    BookingCreate:
+      description: "Schema for creating a new booking"
+      required_fields:
+        - customer_name
+        - customer_email
+        - travel_date
+        - destination
+        - origin
+        - components
+      fields:
+        customer_name:
+          type: "string"
+          min_length: 2
+          max_length: 100
+        customer_email:
+          type: "email"
+        travel_date:
+          type: "datetime"
+          format: "ISO 8601"
+        destination:
+          type: "string"
+          min_length: 2
+          max_length: 100
+        origin:
+          type: "string"
+          min_length: 2
+          max_length: 100
+        components:
+          type: "array"
+          items: "BookingComponentCreate"
+          min_items: 1
+    
+    BookingComponentCreate:
+      description: "Schema for booking component"
+      required_fields:
+        - component_type
+        - provider_name
+        - cost
+      fields:
+        component_type:
+          type: "enum"
+          values: ["flight", "hotel", "visa", "insurance"]
+        provider_name:
+          type: "string"
+        cost:
+          type: "float"
+          minimum: 0
+        is_refundable:
+          type: "boolean"
+          default: false
+        cancellation_fee:
+          type: "float"
+          default: 0
+    
+    RefundEstimateRequest:
+      description: "Schema for refund estimation request"
+      fields:
+        selected_model:
+          type: "enum"
+          values: ["auto", "random_forest", "gradient_boosting", "rule_based"]
+          default: "auto"
+        calamity_type:
+          type: "string"
+          default: "auto"
+        severity:
+          type: "enum"
+          values: ["low", "medium", "high", "critical"]
+          default: "high"
+    
+    RiskEventCreate:
+      description: "Schema for creating risk event"
+      required_fields:
+        - event_type
+        - severity
+        - affected_region
+        - start_date
+      fields:
+        event_type:
+          type: "enum"
+          values: ["war", "pandemic", "natural_disaster", "political_unrest", "terrorism"]
+        severity:
+          type: "enum"
+          values: ["low", "medium", "high", "critical"]
+        affected_region:
+          type: "string"
+        start_date:
+          type: "datetime"
+        end_date:
+          type: "datetime"
+          optional: true
+        description:
+          type: "string"
+          optional: true
+        is_active:
+          type: "boolean"
+          default: true
+    
+    # Response Models
+    BookingResponse:
+      description: "Schema for booking response"
+      fields:
+        id:
+          type: "integer"
+          description: "Unique booking ID"
+        booking_reference:
+          type: "string"
+          description: "Unique booking reference code"
+        customer_name:
+          type: "string"
+        customer_email:
+          type: "string"
+        booking_date:
+          type: "datetime"
+        travel_date:
+          type: "datetime"
+        destination:
+          type: "string"
+        origin:
+          type: "string"
+        total_cost:
+          type: "float"
+        status:
+          type: "enum"
+          values: ["active", "cancelled", "completed", "refunded"]
+        components:
+          type: "array"
+          items: "BookingComponentResponse"
+    
+    RefundEstimateResponse:
+      description: "Schema for refund estimate response"
+      fields:
+        id:
+          type: "integer"
+        booking_id:
+          type: "integer"
+        estimate_date:
+          type: "datetime"
+        expected_refund_amount:
+          type: "float"
+          description: "Expected refund amount"
+        expected_refund_percentage:
+          type: "float"
+          description: "Expected refund percentage"
+        confidence_lower:
+          type: "float"
+          description: "Lower bound of 95% confidence interval"
+        confidence_upper:
+          type: "float"
+          description: "Upper bound of 95% confidence interval"
+        confidence_level:
+          type: "float"
+          description: "Confidence level (typically 0.95)"
+        current_risk_level:
+          type: "enum"
+          values: ["low", "medium", "high", "critical"]
+        risk_score:
+          type: "float"
+          description: "Risk score (0-100)"
+        best_case_refund:
+          type: "float"
+        worst_case_refund:
+          type: "float"
+        most_likely_refund:
+          type: "float"
+        model_version:
+          type: "string"
+        prediction_confidence:
+          type: "float"
+    
+    RiskEventResponse:
+      description: "Schema for risk event response"
+      fields:
+        id:
+          type: "integer"
+        event_type:
+          type: "enum"
+          values: ["war", "pandemic", "natural_disaster", "political_unrest", "terrorism"]
+        severity:
+          type: "enum"
+          values: ["low", "medium", "high", "critical"]
+        affected_region:
+          type: "string"
+        start_date:
+          type: "datetime"
+        end_date:
+          type: "datetime"
+          optional: true
+        description:
+          type: "string"
+          optional: true
+        is_active:
+          type: "boolean"
+    
+    RegionalRiskResponse:
+      description: "Schema for regional risk assessment"
+      fields:
+        region:
+          type: "string"
+        risk_level:
+          type: "enum"
+          values: ["low", "medium", "high", "critical"]
+        events:
+          type: "array"
+          items: "RiskEventResponse"
+    
+    # Generic Response Wrappers
+    APIResponse:
+      description: "Standard API response wrapper"
+      fields:
+        status:
+          type: "string"
+          values: ["success", "error"]
+        message:
+          type: "string"
+        data:
+          type: "generic"
+          description: "Response data payload"
+    
+    ErrorResponse:
+      description: "Standard error response"
+      fields:
+        status:
+          type: "string"
+          value: "error"
+        message:
+          type: "string"
+        errors:
+          type: "array"
+          items: "ErrorDetail"
+          optional: true
+    
+    PaginatedResponse:
+      description: "Paginated response wrapper"
+      fields:
+        status:
+          type: "string"
+          value: "success"
+        message:
+          type: "string"
+        data:
+          type: "array"
+        total:
+          type: "integer"
+        skip:
+          type: "integer"
+        limit:
+          type: "integer"
+
+  # Enums
+  enums:
+    ComponentType:
+      values:
+        - flight
+        - hotel
+        - visa
+        - insurance
+    
+    EventType:
+      values:
+        - war
+        - pandemic
+        - natural_disaster
+        - political_unrest
+        - terrorism
+    
+    SeverityLevel:
+      values:
+        - low
+        - medium
+        - high
+        - critical
+    
+    MLModel:
+      values:
+        - auto
+        - random_forest
+        - gradient_boosting
+        - rule_based
+    
+    BookingStatus:
+      values:
+        - active
+        - cancelled
+        - completed
+        - refunded
+
+# Machine Learning Context
+ml_models:
+  framework: "scikit-learn"
+  version: "1.4.0"
+  
+  models:
+    - name: "random_forest"
+      type: "RandomForestRegressor"
+      purpose: "Refund percentage prediction"
+      features:
+        - component_type
+        - event_type
+        - severity
+        - days_before_travel
+        - had_insurance
+        - was_force_majeure
+      target: "refund_percentage"
+    
+    - name: "gradient_boosting"
+      type: "GradientBoostingRegressor"
+      purpose: "Refund percentage prediction"
+      features:
+        - component_type
+        - event_type
+        - severity
+        - days_before_travel
+        - had_insurance
+        - was_force_majeure
+      target: "refund_percentage"
+    
+    - name: "ensemble"
+      type: "Ensemble"
+      description: "Combines random_forest and gradient_boosting"
+      method: "weighted_average"
+  
+  training_data:
+    source: "historical_refunds table"
+    size: "500+ records"
+    features: 6
+    target: "refund_percentage"
+  
+  prediction_output:
+    expected_refund_percentage:
+      type: "float"
+      range: [0, 100]
+    confidence_interval:
+      level: 0.95
+      bounds: ["confidence_lower", "confidence_upper"]
+    scenarios:
+      - best_case
+      - worst_case
+      - most_likely
+
+# Frontend Context
+frontend:
+  framework: "React"
+  version: "18.2.0"
+  build_tool: "Vite 5.0"
+  base_url: "http://localhost:3000"
+  
+  pages:
+    - path: "/"
+      component: "Dashboard"
+      description: "Overview with statistics"
+    
+    - path: "/bookings"
+      component: "BookingList"
+      description: "List all bookings"
+    
+    - path: "/bookings/new"
+      component: "CreateBooking"
+      description: "Create new booking"
+    
+    - path: "/bookings/:id"
+      component: "BookingDetails"
+      description: "Booking details and estimation"
+    
+    - path: "/risk-monitor"
+      component: "RiskMonitor"
+      description: "Global risk events"
+    
+    - path: "/analytics"
+      component: "Analytics"
+      description: "Historical statistics"
+  
+  api_client:
+    base_url: "http://localhost:8000/api"
+    library: "axios"
+    response_format: "APIResponse wrapper"
+
+# MCP Server Context
+mcp_server:
+  protocol: "Model Context Protocol"
+  version: "1.0.0"
+  purpose: "Expose API to AI agents (Claude, GPT, etc.)"
+  
+  tools:
+    - name: "create_booking"
+      description: "Create travel booking"
+      parameters: "BookingCreate schema"
+    
+    - name: "get_bookings"
+      description: "Retrieve all bookings"
+      parameters: ["skip", "limit"]
+    
+    - name: "get_booking_details"
+      description: "Get specific booking"
+      parameters: ["booking_id"]
+    
+    - name: "estimate_refund"
+      description: "Generate refund estimate"
+      parameters: ["booking_id", "selected_model", "calamity_type", "severity"]
+    
+    - name: "get_refund_estimates"
+      description: "Get estimate history"
+      parameters: ["booking_id"]
+    
+    - name: "get_risk_events"
+      description: "Query global risks"
+      parameters: ["active_only"]
+    
+    - name: "get_regional_risk"
+      description: "Check regional risk"
+      parameters: ["region"]
+    
+    - name: "get_historical_refunds"
+      description: "Access historical data"
+      parameters: ["component_type", "event_type", "limit"]
+    
+    - name: "get_refund_statistics"
+      description: "Get aggregated statistics"
+      parameters: []
+    
+    - name: "get_provider_policies"
+      description: "Query provider policies"
+      parameters: ["provider_type"]
+    
+    - name: "get_provider_policy"
+      description: "Get specific provider"
+      parameters: ["provider_name"]
+  
+  integration:
+    - "Claude Desktop"
+    - "Cline (VS Code)"
+    - "Custom AI agents"
+
+# Business Logic Context
+business_rules:
+  refund_calculation:
+    factors:
+      - component_type
+      - provider_policy
+      - event_type
+      - event_severity
+      - days_before_travel
+      - insurance_status
+      - force_majeure_status
+    
+    confidence_interval:
+      level: 0.95
+      method: "statistical_bootstrap"
+    
+    risk_assessment:
+      levels: ["low", "medium", "high", "critical"]
+      scoring: "0-100 scale"
+      factors:
+        - active_events_in_region
+        - event_severity
+        - historical_patterns
+  
+  force_majeure_events:
+    types:
+      - war
+      - pandemic
+      - natural_disaster
+      - political_unrest
+      - terrorism
+    
+    impact:
+      high_refund_likelihood: true
+      provider_policy_override: true
+      insurance_coverage: "typically included"
+
+# Deployment Context
+deployment:
+  backend:
+    host: "0.0.0.0"
+    port: 8000
+    reload: true
+    workers: 1
+  
+  frontend:
+    host: "localhost"
+    port: 3000
+    build_command: "npm run build"
+    dev_command: "npm run dev"
+  
+  database:
+    type: "SQLite"
+    location: "backend/refund_estimation.db"
+    auto_initialize: true
+    synthetic_data: true
+
+# Documentation Context
+documentation:
+  api_docs: "http://localhost:8000/api/docs"
+  redoc: "http://localhost:8000/api/redoc"
+  readme: "README.md"
+  guides:
+    - "QUICKSTART.md"
+    - "TESTING.md"
+    - "API_ENHANCEMENT_GUIDE.md"
+    - "GITHUB_UPLOAD_GUIDE.md"
+    - "mcp_server/README.md"
+
+# Testing Context
+testing:
+  backend:
+    framework: "pytest"
+    test_file: "backend/tests/test_api.py"
+    coverage_target: "80%"
+    test_count: 17
+  
+  frontend:
+    framework: "React Testing Library"
+    test_command: "npm test"
+  
+  api_testing:
+    tools:
+      - "Swagger UI"
+      - "cURL"
+      - "Postman"
+      - "httpx (Python)"
+
+# Security Context
+security:
+  cors:
+    enabled: true
+    origins:
+      - "http://localhost:3000"
+      - "http://localhost:5173"
+  
+  input_validation:
+    framework: "Pydantic"
+    sql_injection: "prevented by ORM"
+    xss: "prevented by React"
+  
+  authentication:
+    current: "none"
+    recommended: "OAuth2 or API keys for production"
+  
+  rate_limiting:
+    current: "none"
+    recommended: "implement for production"
+
+# Performance Context
+performance:
+  api_response_time:
+    target: "< 500ms"
+    estimate_generation: "1-3 seconds"
+  
+  database:
+    queries: "< 100ms"
+    indexing: "enabled on key fields"
+  
+  frontend:
+    page_load: "< 2 seconds"
+    code_splitting: "enabled"
+    lazy_loading: "enabled"
+
+# Version Control
+version_control:
+  repository: "https://github.com/abhijitjoshi140377/Uncertainty_Refund"
+  branch: "main"
+  gitignore:
+    - "node_modules/"
+    - "venv/"
+    - "__pycache__/"
+    - "*.db"
+    - ".env"
+
+# Metadata
+metadata:
+  created: "2026-05-16"
+  last_updated: "2026-05-20"
+  version: "1.0.0"
+  license: "MIT"
+  author: "Abhijit Joshi"
+  contact: "support@example.com"
+
+# Made with Bob
