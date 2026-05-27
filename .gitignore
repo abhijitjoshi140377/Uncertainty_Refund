@@ -54,10 +54,15 @@ dist/
 dist-ssr/
 *.local
 
-# Environment
+# Environment & Credentials
 .env
 .env.local
 .env.*.local
+*.env
+!*.env.template
+ibm-credentials.env
+Watsonx/ibm-credentials.env
+**/ibm-credentials.env
 
 # Logs
 logs/
